@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Timers;
 using Fougerite;
-using RustProto;
+using Fougerite.Events;
+using Fougerite.Permissions;
 using UnityEngine;
 using Random = System.Random;
 
@@ -12,7 +12,6 @@ namespace AirDrops
     public class AirDrops : Fougerite.Module
     {
         public IniParser Settings;
-        public Timer AirDropTimer;
         public bool TimedAirdrop;
         public int MinPlayers;
         public int AirdropTime;
@@ -104,16 +103,17 @@ namespace AirDrops
 
         public override Version Version
         {
-            get { return new Version("1.0"); }
+            get { return new Version("1.1"); }
         }
 
         public override void Initialize()
         {
             ReloadConfig();
             
-            AirDropTimer = new Timer(AirdropTime);
-            AirDropTimer.Elapsed += AirDropCall;
-            AirDropTimer.Start();
+            if (TimedAirdrop)
+            {
+                CreateTimer("AirDropTimer", AirdropTime, AirDropCall, true).Start();
+            }
 
             Hooks.OnAirdropCalled += OnAirdropCalled;
             Hooks.OnCommand += OnCommand;
@@ -121,10 +121,7 @@ namespace AirDrops
 
         public override void DeInitialize()
         {
-            if (AirDropTimer != null)
-            {
-                AirDropTimer.Dispose();
-            }
+            KillTimers();
             
             Hooks.OnAirdropCalled -= OnAirdropCalled;
             Hooks.OnCommand -= OnCommand;
@@ -134,7 +131,7 @@ namespace AirDrops
         {
             if (cmd == "airdrop")
             {
-                if (player.Admin || (player.Moderator && Mods) || WLS.Contains(player.SteamID))
+                if (player.Admin || PermissionSystem.GetPermissionSystem().PlayerHasPermission(player, "airdrop.callairdrop") || (player.Moderator && Mods) || WLS.Contains(player.SteamID))
                 {
                     if (args.Length == 0)
                     {
@@ -149,7 +146,7 @@ namespace AirDrops
                         DataStore.GetInstance().Add("AirdropCD", "CD", 0);
                     }
 
-                    double time = (double) ttime;
+                    double time = Convert.ToDouble(ttime);
 
                     double systick = TimeSpan.FromTicks(DateTime.Now.Ticks).TotalSeconds;
                     double calc = systick - time;
@@ -164,7 +161,7 @@ namespace AirDrops
                     {
                         if (args[0] == "here")
                         {
-                            if (player.Admin || (player.Moderator && ModCalltoPos) || WLS.Contains(player.SteamID))
+                            if (player.Admin || PermissionSystem.GetPermissionSystem().PlayerHasPermission(player, "airdrop.callairdrophere") || (player.Moderator && ModCalltoPos) || WLS.Contains(player.SteamID))
                             {
                                 World.GetWorld().AirdropAtOriginal(player.X, 700, player.Z);
                                 player.Notice("\u2708", "Airdrop has been spawned!", 3);
@@ -224,19 +221,14 @@ namespace AirDrops
             return name;
         }
 
-        private void AirDropCall(object sender, ElapsedEventArgs e)
+        private void AirDropCall(TimedEvent te)
         {
-            AirDropTimer.Dispose();
-
             if (Server.GetServer().Players.Count >= MinPlayers)
             {
                 int random = Randomizer.Next(1, 101);
                 if (random <= Chance || Chance == 0)
                 {
-                    Loom.QueueOnMainThread(() =>
-                    {
-                        World.GetWorld().Airdrop();
-                    });
+                    World.GetWorld().Airdrop();
                 }
                 else
                 {
@@ -251,10 +243,6 @@ namespace AirDrops
                     red + "We will check back in after " + white + (AirdropTime / 60000)
                     + red + " minutes!");
             }
-            
-            AirDropTimer = new Timer(AirdropTime);
-            AirDropTimer.Elapsed += AirDropCall;
-            AirDropTimer.Start();
         }
 
         private void ReloadConfig()

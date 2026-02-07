@@ -32,32 +32,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Assembly-CSharp">
       <HintPath>..\Ref\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Facepunch.HitBox, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Ref\Facepunch.HitBox.dll</HintPath>
-    </Reference>
-    <Reference Include="Facepunch.ID, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Ref\Facepunch.ID.dll</HintPath>
-    </Reference>
-    <Reference Include="Facepunch.MeshBatch, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\Ref\Facepunch.MeshBatch.dll</HintPath>
-    </Reference>
-    <Reference Include="Fougerite, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Fougerite">
       <HintPath>..\Ref\Fougerite.dll</HintPath>
     </Reference>
-    <Reference Include="Google.ProtocolBuffers, Version=2.4.1.521, Culture=neutral, PublicKeyToken=55f7125234beb589">
-      <HintPath>..\Ref\Google.ProtocolBuffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="uLink, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="uLink">
       <HintPath>..\Ref\uLink.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="UnityEngine">
       <HintPath>..\Ref\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
